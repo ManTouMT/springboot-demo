@@ -1,6 +1,6 @@
 package org.springboot;
 
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@ComponentScan
-@LxyEnableAutoConfiguration
-public @interface LxySpringBootApplication {
+//@AutoConfigurationPackage
+@Import(LxyAutoConfigurationImportSelector.class)
+public @interface LxyEnableAutoConfiguration {
 }

@@ -1,0 +1,4 @@
+@see spring-boot-autoconfigure\2.7.18\spring-boot-autoconfigure-2.7.18.jar!\META-INF\spring.factories
+
+org.springboot.LxyEnableAutoConfiguration=\
+org.springboot.WebServerAutoConfiguration
