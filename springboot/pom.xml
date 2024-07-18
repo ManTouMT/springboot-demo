@@ -38,6 +38,7 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>9.4.53.v20231009</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>
