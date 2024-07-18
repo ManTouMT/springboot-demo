@@ -11,38 +11,48 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.startup.Tomcat;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 
 public class LxySpringApplication {
     public static void run(Class<?> clazz){
+        // 创建spring容器
+        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.register(clazz);
+        context.refresh();
+        
         // 启动tomcat
-        startTomcat();
+        startTomcat(context);
     }
     
-    private static void startTomcat() {
+    private static void startTomcat(WebApplicationContext webApplicationContext) {
         System.out.println("hello tomcat");
-        Tomcat tomcat = new Tomcat();
-        Server server = tomcat.getServer();
-
-        Connector connector = new Connector();
-        connector.setPort(8081);
-
-        Engine engine = new StandardEngine();
-        engine.setDefaultHost("localhost");
-
-        Host host = new StandardHost();
-        host.setName("localhost");
-
+  
         String contextPath = "";
         Context context = new StandardContext();
         context.setPath(contextPath);
         context.addLifecycleListener(new Tomcat.FixContextListener());
-
+        
+        Host host = new StandardHost();
+        host.setName("localhost");
         host.addChild(context);
-        engine.addChild(host);
 
+        Engine engine = new StandardEngine();
+        engine.setDefaultHost("localhost");
+        engine.addChild(host);
+        
+        Tomcat tomcat = new Tomcat();
+        Server server = tomcat.getServer();
         Service service = server.findService("Tomcat");
         service.setContainer(engine);
+
+        Connector connector = new Connector();
+        connector.setPort(8081);
         service.addConnector(connector);
+
+        tomcat.addServlet(contextPath, "dispatcher", new DispatcherServlet(webApplicationContext));
+        context.addServletMappingDecoded("/*", "dispatcher");
 
         try {
             tomcat.start();
