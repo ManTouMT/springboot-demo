@@ -15,6 +15,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import java.util.Map;
+
 public class LxySpringApplication {
     public static void run(Class<?> clazz){
         // 创建spring容器
@@ -22,8 +24,22 @@ public class LxySpringApplication {
         context.register(clazz);
         context.refresh();
         
+        // 启动容器
+        WebServer webServer = getWebServer(context);
+        webServer.start();
         // 启动tomcat
-        startTomcat(context);
+//        startTomcat(context);
+    }
+    
+    private static WebServer getWebServer(WebApplicationContext applicationContext) {
+        Map<String, WebServer> beansOfType = applicationContext.getBeansOfType(WebServer.class);
+        if(beansOfType.isEmpty()){
+            throw new NullPointerException("beansOfType is null");
+        }
+        if (beansOfType.size() > 1) {
+            throw new IllegalArgumentException("multiple beans of type " + WebServer.class.getName());
+        }
+        return beansOfType.values().stream().findFirst().get();
     }
     
     private static void startTomcat(WebApplicationContext webApplicationContext) {
